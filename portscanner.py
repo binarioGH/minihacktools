@@ -35,14 +35,9 @@ if __name__ == '__main__':
 				exit()
 			argcount += 1
 		for port in range(minim, maxim + 1):
-			print("Probando con el puerto {}".format(port))
 			server = socket(AF_INET, SOCK_STREAM)
 			server.settimeout(5)
 			if(server.connect_ex((ip, port))== 0):
 				print("El puerto {} está abierto".format(port))
-			else:
-				print("Hubo problemas al conectarse a {} por el puerto {}".format(ip, port))
-			server.close()
-		print("Escaneo completado.")
-
+			
 
