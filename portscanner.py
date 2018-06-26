@@ -36,8 +36,12 @@ if __name__ == '__main__':
 			argcount += 1
 		for port in range(minim, maxim + 1):
 			server = socket(AF_INET, SOCK_STREAM)
-			server.settimeout(5)
-			if(server.connect_ex((ip, port))== 0):
-				print("El puerto {} está abierto".format(port))
+			server.settimeout(2)
+			if(server.connect_ex((ip, port)) == 0):
+				print("\n\nEl puerto {} está abierto.".format(port))
+			try:
+				print("Banner: {}".format(server.recv(1024)))
+			except:
+				continue
 			
 
