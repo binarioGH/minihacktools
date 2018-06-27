@@ -38,10 +38,9 @@ if __name__ == '__main__':
 			server = socket(AF_INET, SOCK_STREAM)
 			server.settimeout(2)
 			if(server.connect_ex((ip, port)) == 0):
-				print("\n\nEl puerto {} está abierto.".format(port))
+				print("\n\nPuerto abierto: {}.".format(port))
 			try:
 				print("Banner: {}".format(server.recv(1024)))
 			except:
 				continue
-			
-
+			server.close()
