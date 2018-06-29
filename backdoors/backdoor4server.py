@@ -11,9 +11,8 @@ def h():
 	exit()
 
 if __name__ == '__main__':
-	if len(argv) < 5 and argv[1] != "-h" or len(argv) > 5:
-		print("{} -h para ver las opciones.".format(argv[0]))
-		exit()
+	if len(argv) < 5 or len(argv) > 5:
+		h()
 	else:
 		argcount = 0
 		ip = str()
@@ -22,8 +21,6 @@ if __name__ == '__main__':
 			if arg[0] != "-":
 				argcount += 1
 				continue
-			elif arg == "-h":
-				h()
 			elif arg == "-p":
 				try:
 					port = int(argv[argcount + 1])
