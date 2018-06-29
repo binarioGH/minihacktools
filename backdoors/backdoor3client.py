@@ -16,3 +16,4 @@ if __name__ == '__main__':
 		while True:
 			sock.send(input(">>").encode())
 			print(sock.recv(1024).decode())
+ 
