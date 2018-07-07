@@ -40,7 +40,7 @@ if __name__ == '__main__':
 			if(server.connect_ex((ip, port)) == 0):
 				print("\n\nPuerto abierto: {}.".format(port))
 			try:
-				print("Banner: {}".format(server.recv(1024)))
+				print("Banner: {}".format(server.recv(1024).decode()))
 			except:
 				continue
 			server.close()

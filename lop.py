@@ -98,6 +98,7 @@ if __name__ == '__main__':
 			elif arg == "-n3":
 				defminmax("n3", str(argv[argcount + 1]))
 			elif arg == "-n4":
+				breakpoint()
 				defminmax("n4", str(argv[argcount + 1]))
 			elif arg == "-lst":
 				pingf(argv[argcount + 1])
