@@ -1,6 +1,6 @@
 #-*-coding:utf-8-*-
-from os import system
 from sys import argv
+import subprocess	
 
 def pingls():
 	for ip in file:
@@ -51,10 +51,10 @@ if __name__ == '__main__':
 				else:
 					print("{} no se reconoce como una bandera valida.".format(arg))
 					exit()
-		for num in range(int(minim), int(maxim + 1)):
+		for num in range(int(minim), int(maxim) + 1):
 			ip = str("{}.{}".format(subr, num))
-			ping = system("ping {} > nul".format(ip))
-			if ping == 0:
+			ping = subprocess.run("ping {}".format(ip), stdout=subprocess.DEVNULL)
+			if str(ping)[len(str(ping)) - 2] == "0":
 				print("{} está encendida.".format(ip))
 			else:
 				print("{} está apagada.".format(ip))
