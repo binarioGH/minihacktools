@@ -4,11 +4,13 @@ import subprocess
 
 def pingls():
 	for ip in file:
-		ping = system("ping {} > nul".format(ip))
-		if ping == 0:
+		ping = subprocess.run("ping {}".format(ip), stdout=subprocess.DEVNULL)
+		if str(ping)[len(str(ping)) - 2] == "0":
 			print("{} está encendida.".format(ip))
 		else:
 			print("{} está apagada.".format(ip))
+	file.close()
+	exit()
 	exit()
 def h():
 	print("Programa para mandar ping a determinado numero de computadoras.\n")
