@@ -2,6 +2,19 @@
 #-*-coding: utf-8 -*-
 from socket import *
 from sys import argv
+def banner():
+	print('''           
+        
+                 ___________                
+		|           |                    
+		|    ___    |        
+		|   |___|   |  S    
+		|     ______|     
+		|    |         
+		|    |         
+		|    |         
+		|____|        
+		''')             
 
 def h():
 	print("Opciones:\n\n-min: Establecer el puerto por el que se empezará a escanear.")
@@ -10,6 +23,7 @@ def h():
 	exit()
 
 if __name__ == '__main__':
+	banner()
 	if len(argv) != 7 and len(argv) != 2:
 		print("Usa {} -h para ver las opciones.".format(argv[0]))
 		exit()
@@ -34,6 +48,7 @@ if __name__ == '__main__':
 				print("Usa {} -h para ver las opciones.".format(argv[0]))
 				exit()
 			argcount += 1
+		print("\nSe ha empezado el analisis de puertos...\n")
 		for port in range(minim, maxim + 1):
 			server = socket(AF_INET, SOCK_STREAM)
 			server.settimeout(2)
@@ -44,3 +59,4 @@ if __name__ == '__main__':
 			except:
 				continue
 			server.close()
+		print("\n\nAnalisis terminado.")
