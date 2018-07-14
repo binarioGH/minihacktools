@@ -23,16 +23,15 @@ def bannerscann(banners, bf):
 		exit()
 	else:
 		print("Se ha empezado el analisis de banners.\n\n")
-		for banner in banners:
-			banner += "\n"
-			print("[+] Analizando: {}".format(banner))
-			count = 0
-			for b in vulbanners:
-				count += 1
-				if b in banner or b == banner:
-					print("Se ha encontrado un banner vulnerable: {}".format(b))
+		for b in vulbanners.readlines():
+			for banner in banners:
+				if b.strip("\n") in banner.strip("\n") or b.strip("\n") == banner.strip("\n"):
+					print("Se ha encontrado un banner vulnerable: {}".format(banner))
 					break
+	finally:
 		print("Se ha terminado el analisis de banners.")
+		vulbanners.close()
+
 
 
 def portscann(minim, maxim):
