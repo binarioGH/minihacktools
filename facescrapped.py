@@ -24,21 +24,31 @@ class Scrapper():
 	def main(self, num):
 		pid = randint(1, int(1e7))
 		pcount = 0
+		dcount = 0
 		try:
-			folder = "FaceScraped"
-			os.mkdir(folder)
+			folder = "FaceScrapped{}".format(randint(100,1000))
+			os.mkdir(str(folder))
 		except Exception as e:
 			print("Ha habido un problema al crear un directorio.\n{}".format(e))
 			exit()
+		print("Se ha creado el directorio {}".format(folder))
 		while pcount < num:
-			if self.getprofile("http://graph.facebook.com/picture?id={}&width=800".format(pid),"{}/{}.jpg".format(folder,pid)):
+			photourl = "http://graph.facebook.com/picture?id={}&width=800".format(pid)
+			if self.getprofile(photourl,"{}/{}.jpg".format(folder,pid)):
+			    print("Se ha descargado {}.".format(photourl))
 			    pcount += 1
 			    pid += 1
 			else:
-				pid += 10
+				dcount += 1
+				if dcount != 20:
+					pid += 10
+				else:
+					dcount = 0
+					print("No se han encontrado imagenes en las anteriores id ({})...".format(pid))
+					pid = randint(1, int(1e7))
+					print("...Se ha conseguido un nuevo numero de id: {}".format(pid))
 
 	def getprofile(self, photourl, saveurl):
-		print("Descargando: {}.".format(photourl))
 		response = urlopen(photourl)
 		if response.geturl() != "https://static.xx.fbcdn.net/rsrc.php/v3/yo/r/UlIqmHJn-SK.gif":
 			open(saveurl, "wb").write(response.read())
@@ -50,4 +60,3 @@ class Scrapper():
 if __name__ == '__main__':
 	start = Scrapper()
 	start.main(argv[1])
-
