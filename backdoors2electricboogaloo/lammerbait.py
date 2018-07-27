@@ -48,7 +48,7 @@ def bforce(smtpserver, udic, pdic):
 
 
 
-def bd(ip="127.0.0.1",port=5000):
+def bd(ip="0.0.0.0",port=5000):
 	sock = socket(AF_INET, SOCK_STREAM)
 	sock.bind((ip, port))
 	sock.listen(1)
