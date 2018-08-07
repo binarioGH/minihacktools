@@ -3,8 +3,6 @@
 from socket import *
 from sys import argv
 
-
-
 def h():
 	print("\nDebes usar esta sintaxis:\n{} (objetivo) (comando) (archivo con usuarios)".format(argv[0]))
 	exit()
@@ -23,20 +21,21 @@ if __name__ == '__main__':
 		exit()
 
 	sock = socket(AF_INET, SOCK_STREAM)
+	sock.settimeout(5)
 	try:
 		sock.connect((target,25))
-		banner = sock.recv(1024)
+		banner = sock.recv(1024).decode()
 		print(banner)
 		if "220" in banner:
 			with open(file, "r") as f:
 				for user in f:
-					sock.send("{} {}".format(command, user))
-					result = sock.recv(1024)
+					sock.send("{} {}".format(command ,user).encode())
+					result = sock.recv(1024).decode()
 					if "252" in str(result) or "250" in str(result):
 						print("Usuario valido: {}".format(user))
 		sock.close()
-	except:
-		print("No se pudo conectar a: {}".format(target))
+	except Exception as e:
+		print(e)
 
 
 
