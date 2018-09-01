@@ -75,7 +75,6 @@ if __name__ == '__main__':
 			[C]onnect to a bot
 			[S]how register of connections
 			[exit]
-
 			>>>>''')
 		do = do.lower()
 		if do == "c":

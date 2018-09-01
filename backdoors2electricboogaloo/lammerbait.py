@@ -97,7 +97,6 @@ if __name__ == '__main__':
 	while do != "e":
 		os.system("cls")
 		do = input('''
-
 		    E M A I L   C R A C K E R
 		    _________________________
 	            C R A C K
@@ -117,8 +116,6 @@ if __name__ == '__main__':
 		             
 		             [E]xit
 		    __________________________
-
-
 		        	>>>>>  ''')
 		do = do.lower()
 
