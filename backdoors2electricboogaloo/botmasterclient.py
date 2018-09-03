@@ -46,10 +46,7 @@ class Botmaster:
 		while True:
 			try:
 				r = self.sock.recv(1024).decode()
-				try:
-					print("{}\n>>>>".format(r))
-				except:
-					pass
+				print("{}\n>>>>".format(r))
 			except:
 				print("Closing 'waiting4recv' method.")
 				return 0
