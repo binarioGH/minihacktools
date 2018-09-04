@@ -6,10 +6,13 @@ from time import sleep
 
 
 if __name__ == '__main__':
-	newdir = str(date.today())
-	chdir("C:\\")
-	mkdir(newdir)
-	chdir(newdir)
+	while True:
+		try:
+			chdir("C:\\{}".format(date.today()))
+		except:
+			mkdir("C:\\{}".format(date.today()))
+		else:
+			break
 	count = 1
 	while True:
 		ss = screenshot()
