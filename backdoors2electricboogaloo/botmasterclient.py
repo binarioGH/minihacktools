@@ -4,14 +4,15 @@ import threading
 from os import system, getcwd
 from getpass import getpass
 from time import sleep
-
-
+from platform import system as s
 
 class Botmaster:
-	def __init__(self, c):
-		self.clean = c
-		pass
-
+	def __init__(self):
+		os = s()
+		if os == "Windows":
+			self.clean = "cls"
+		else:
+			self.clean = "clear"
 	def conn2bot(self, ip, port):
 		try:
 			port = int(port)
@@ -54,18 +55,12 @@ class Botmaster:
 
 
 if __name__ == '__main__':
-	d = getcwd()
-	if d[0].isalpha:
-		clean = "cls"
-	else:
-		clean = "clear"
-
-	bm = Botmaster(clean)
+	bm = Botmaster()
 	do = ""
 	IPs = []
 	ports = []
 	while do != "exit":
-		system(clean)
+		system(bm.clean)
 		do = input('''
 		  - B O T   M A S T E R -
 			___________________
