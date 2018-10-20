@@ -37,6 +37,9 @@ class Botmaster:
 				print("Input 'exit' to go back.")
 				while cmd != "exit":
 					cmd = input(">>>>")
+					if cmd == "logp":
+						passw = getpass("Ingresa la contraseña: ")
+						cmd = "logp {}".format(passw)
 					if cmd != "exit":
 						self.sock.send(cmd.encode())
 				self.sock.close()
