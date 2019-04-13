@@ -4,7 +4,7 @@ from crypt import Vigenere as v
 from optparse import OptionParser as op
 from threading import Thread 
 from time import sleep
-from os import system
+from os import system, path
 from sys import argv
 
 class Coyote:
@@ -34,7 +34,6 @@ class Coyote:
             cmd = input(">>>");
             if(cmd[:3] == "get"):
                 self.send(cmd);
-                self.getFile(cmd[4:]);
             elif(cmd[:4] == "send"):
                 self.send(cmd);
                 self.sendFile(cmd[5:]);
@@ -66,12 +65,19 @@ class Coyote:
             msj = str(msj).encode();
         self.conn.send(msj);
     def getFile(self, file):
+        self.conn.settimeout(20);
+        size = -1;
         with open(file, "wb") as f:
             try:
-                self.conn.settimeout(10);
-                content = self.recv(decode=False, decrypt=True, b=1024);
+                size = int(self.recv(decode=True));
+                print("Size of {}: {}".format(file, size));
+                content = self.recv(decode=False, decrypt=True, b=size);
             except Exception as e:
                 print(e);
+                if(size == -1):
+                    print("The program did not get the size of the file.");
+                else:
+                    print("The program did not get the file.");
             else:
                 f.write(str(content).encode());
             finally:

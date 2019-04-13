@@ -2,15 +2,17 @@
 from random import shuffle
 ABC = "abcdefghijklmnopqrstuvwxyz"
 
-def generateKey(it = 0):
-	abcs = [list(ABC)];
-	key = ""
-	for l in range(it):
-		abcs.append(abcs[0].copy);
-	for a in abcs:
-		shuffle(a);
-		key += "".join(a);
-	return key;
+def generateBigKey(mx = 2):
+	BigKey = "";
+	for i in range(mx):
+		BigKey += generateKey();
+	return BigKey;
+
+
+def generateKey():
+	key = list(ABC);
+	shuffle(key);
+	return "".join(key);
 
 def inAbc(l, abc):
 	if(l in abc):
