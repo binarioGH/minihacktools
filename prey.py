@@ -78,7 +78,7 @@ class Prey:
 		except Exception as e:
 			self.send("{}".format(e));
 		else:
-			self.send(content); 
+			self.send(content.decode('latin1')); 
 	def getFile(self,  file):
 		print("Getting file."),
 		try:

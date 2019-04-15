@@ -69,7 +69,8 @@ class Coyote:
         size = -1;
         with open(file, "wb") as f:
             try:
-                size = int(self.recv(decode=True));
+                size = int(self.recv(decode=Truex));
+                size += size * 0.50;
                 print("Size of {}: {}".format(file, size));
                 content = self.recv(decode=False, decrypt=True, b=size);
             except Exception as e:
