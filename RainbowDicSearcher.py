@@ -19,15 +19,13 @@ def loadFile(file, splt=False):
 			content = content.split()
 		return content
 
-def searchHash(*hashes, rd, prnt=True):
+def searchHash(hashes, rd, prnt=True):
 	raindic = loadFile(rd)
 	if raindic == -1:
 		return ("There was a problem loading {}.".format(rd), [0])
 	raindic = loads(raindic)
 	hacked = []
 	for hsh in hashes:
-		print(hsh)
-		exit()
 		if hsh in raindic["hashes"]:
 			if prnt:
 				print("{} : {}".format(hsh, raindic["hashes"][hsh]))
@@ -50,12 +48,12 @@ def main():
 		print("Values undefined:\nJson file: {}\nHash: {}".format(o.json, o.hash))
 		exit()
 	if o.hashes == "undefined":
-		hashes = []
+		hshes = []
 	else:
-		hashes = loadFile(o.hashes, True)
+		hshes = loadFile(o.hashes, True)
 	if o.hash != "undefined":
-		hashes.append(o.hash)
-	out, lst = searchHash(hashes, rd=o.json, prnt=o.prnt)
+		hshes.append(o.hash)
+	out, lst = searchHash(hashes=hshes, rd=o.json, prnt=o.prnt)
 	if o.prnt:
 		print(out)
 	if o.save:
