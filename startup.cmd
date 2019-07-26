@@ -1,14 +1,10 @@
 @echo off
-set dest=%appdata%\Microsoft\Windows\Start Menu\Programs\Startup
-cd %dest%	
-echo dir: %dest%
-:movestuff
-if %2 == -l goto link
-echo Copying!
-copy %1 %dest%
-goto ext
-:link
-echo Linking!
-echo start %1 > link.bat
-:ext
-echo bye
+set dest=%appdata%\Microsoft\Windows\Start Menu\Programs\Startup		
+set filename=%1
+set path=%2
+set linkname=%3
+if "%linkname%"=="" set linkname=link.bat
+if "%path%"=="" set path=%cd%
+cd %dest%
+echo cd %path% > %linkname%
+echo start %filename% >> %linkname%
