@@ -1,3 +1,4 @@
 pyautogui
 python-whois
 mechanize
+DNSPython
