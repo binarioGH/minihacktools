@@ -10,6 +10,11 @@ def main():
 	op.add_option("-s", "--save",action="store_true" ,dest="saveLog", default=False, help="Save all the information in a file.")
 	op.add_option("-f", "--filename", dest="fileName",default="{}.txt".format(getDate()), help="Set a the name of the file where the log is gonna be saved.")
 	op.add_option("-n", "--doNotPrint",action="store_true", dest="doNotPrint", default=False, help="Use this flag if you don't want to print the output.")
+	op.add_option("-0","--dMX", dest="mx", action="store_false" ,default=True, help="Do not query MX records. (Mail Exchange)")
+	op.add_option("-1", "--dA", dest="a", action="store_false", default=True, help="Do not query A records. (IPV4)")
+	op.add_option("-2", "--dAAAA", dest="aaaa", action="store_false", default=True, help="Do not query AAAA records (IPV6)")
+	op.add_option("-3", "--dNS", dest="ns", action="store_false", default=True, help="Do not query NS records (Name Service)")
+	op.add_option("-4", "--dTXT", dest="txt", action="store_false", default=True, help="Do not query TXT records (Text records)")
 	(o, args) = op.parse_args()
 	if not o.dns:
 		if not o.doNotPrint:
@@ -17,13 +22,16 @@ def main():
 		exit()
 	if o.dns[:4].lower() == "www.":
 		o.dns = o.dns[5:]
-	commands = ("MX", "A", "AAAA", "NS", "TXT")
-	answares = {}
+	commands = {"MX": [o.mx], "A": [o.a], "AAAA": [o.aaaa], "NS": [o.ns], "TXT": [o.txt]}
 	if o.saveLog:
 		log = open(o.fileName, "w")
 	for cmd in commands:
+		text =""
 		try:
-			answares[cmd] = resolver.query(o.dns, cmd)
+			if commands[cmd][0]:
+				commands[cmd].append(resolver.query(o.dns, cmd))
+			else:
+				continue
 		except:
 			text = "DNS response do not contain {}.".format(cmd)
 		else:
@@ -36,16 +44,17 @@ def main():
 	if not o.doNotPrint:
 		print("\n"+ "+"*80 + "\n")
 	
-	for ans in answares:
-		
-		responsetext = "  DNS RESPONSE FOR {}:".format(ans)
+	for cmd in commands:
+		if not commands[cmd][0]:
+			continue
+		responsetext = "  DNS RESPONSE FOR {}:".format(cmd)
 		if not o.doNotPrint:
 			print("\n"+ "-"*80 + "\n")
 			print(responsetext)
 		if o.saveLog:
 			log.write("\n"+ "-"*80 + "\n")
 			log.write(responsetext+"\n")
-		for info in answares[ans]:
+		for info in commands[cmd][1]:
 			infoText = "\n	{}\n".format(info)
 			if not o.doNotPrint:
 				print(infoText)
