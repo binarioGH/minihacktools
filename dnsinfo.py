@@ -9,7 +9,14 @@ def main():
 	op.add_option("-d", "--dns", dest="dns", default=0, help="Set the dns that you are investigating.")
 	op.add_option("-s", "--save",action="store_true" ,dest="saveLog", default=False, help="Save all the information in a file.")
 	op.add_option("-f", "--filename", dest="fileName",default="{}.txt".format(getDate()), help="Set a the name of the file where the log is gonna be saved.")
+	op.add_option("-n", "--doNotPrint",action="store_true", dest="doNotPrint", default=False, help="Use this flag if you don't want to print the output.")
 	(o, args) = op.parse_args()
+	if not o.dns:
+		if not o.doNotPrint:
+			print("You didn't defined a dns.")
+		exit()
+	if o.dns[:4].lower() == "www.":
+		o.dns = o.dns[5:]
 	commands = ("MX", "A", "AAAA", "NS", "TXT")
 	answares = {}
 	if o.saveLog:
@@ -19,25 +26,29 @@ def main():
 			answares[cmd] = resolver.query(o.dns, cmd)
 		except:
 			text = "DNS response do not contain {}.".format(cmd)
-			print(text)
 		else:
 			text = "{} query solved!".format(cmd)
-			print(text)
 		finally:
 			if o.saveLog:
 				log.write(text+"\n")
-	print("\n"+ "+"*80 + "\n")
+			if not o.doNotPrint:
+				print(text)
+	if not o.doNotPrint:
+		print("\n"+ "+"*80 + "\n")
 	
 	for ans in answares:
-		print("\n"+ "-"*80 + "\n")
+		
 		responsetext = "  DNS RESPONSE FOR {}:".format(ans)
-		print(responsetext)
+		if not o.doNotPrint:
+			print("\n"+ "-"*80 + "\n")
+			print(responsetext)
 		if o.saveLog:
 			log.write("\n"+ "-"*80 + "\n")
 			log.write(responsetext+"\n")
 		for info in answares[ans]:
 			infoText = "\n	{}\n".format(info)
-			print(infoText)
+			if not o.doNotPrint:
+				print(infoText)
 			if o.saveLog:
 				log.write("\n	{}\n".format(info)+"\n")
 
