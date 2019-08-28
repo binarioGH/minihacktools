@@ -15,14 +15,21 @@ def main():
 	op.add_option("-2", "--dAAAA", dest="aaaa", action="store_false", default=True, help="Do not query AAAA records (IPV6)")
 	op.add_option("-3", "--dNS", dest="ns", action="store_false", default=True, help="Do not query NS records (Name Service)")
 	op.add_option("-4", "--dTXT", dest="txt", action="store_false", default=True, help="Do not query TXT records (Text records)")
+	op.add_option("-o", "--otherrecord", dest="otherrecord", default=0, help="Set other records that you want to search. --otherrecord one,two,three...")	
 	(o, args) = op.parse_args()
 	if not o.dns:
 		if not o.doNotPrint:
 			print("You didn't defined a dns.")
 		exit()
+
 	if o.dns[:4].lower() == "www.":
 		o.dns = o.dns[5:]
 	commands = {"MX": [o.mx], "A": [o.a], "AAAA": [o.aaaa], "NS": [o.ns], "TXT": [o.txt]}
+	if o.otherrecord:
+		o.otherrecord = o.otherrecord.split(",")
+		for record in o.otherrecord:
+			record = record.upper()
+			commands[record] = [True]
 	if o.saveLog:
 		log = open(o.fileName, "w")
 	for cmd in commands:
