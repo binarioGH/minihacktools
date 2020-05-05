@@ -32,8 +32,8 @@ int main(int nArgs, char* argv[]){
 				cout<<chr;
 				log.open(file, ios::app);
 				switch(chr){
-					case 1:log<<"[CLICK IZQUIERDO]";break;
-					case 2:log<<"[CLICK DERECHO]";break;
+					//case 1:log<<"[CLICK IZQUIERDO]";break;
+					//case 2:log<<"[CLICK DERECHO]";break;
 					case 8:log<<"[TAB]";break;
 					case 12:log<<"[ALT]";break;
 					case 20:
