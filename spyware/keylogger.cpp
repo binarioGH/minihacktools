@@ -48,7 +48,10 @@ int main(int nArgs, char* argv[]){
 					    }
 					    log<<char(chr);
 				}
-				if(count == 50){
+				if(chr == 13){
+					count = 0;
+				}
+				if(count >= 70 && chr == 32){
 					cout<<endl;
 					log<<"\n";
 					count = 0;
